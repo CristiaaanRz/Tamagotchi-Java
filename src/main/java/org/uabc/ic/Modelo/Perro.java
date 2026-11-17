@@ -1,20 +1,19 @@
 package org.uabc.ic.Modelo;
 
-public class Perro extends Tamagotchi implements TamagotchiActions{
+public class Perro extends Tamagotchi implements TamagotchiActions {
 
     private int nivelAgresividad;
     private int nivelImperactividad;
 
+    public Perro(String nombre, int hambre, int salud, int felicidad, int energia) {
+        super(nombre, hambre, salud, felicidad, energia);
+        nivelAgresividad = 10;
+        nivelImperactividad = 10;
+    }
 
-        public Perro(String nombre, int hambre, int salud, int felicidad, int energia){
-            super(nombre, hambre, salud, felicidad, energia);
-            nivelAgresividad = 10;
-            nivelImperactividad = 10;
-        }
-
-        public Perro(){
-            super("Ramiro", 0, 10, 5, 5);
-        }
+    public Perro() {
+        super("Ramiro", 0, 10, 5, 5);
+    }
 
     @Override
     public void comer(int alimento) {

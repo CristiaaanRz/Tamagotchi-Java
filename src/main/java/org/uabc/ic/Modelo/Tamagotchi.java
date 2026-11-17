@@ -15,6 +15,7 @@ public class Tamagotchi {
         this.felicidad = felicidad;
         this.energia = energia;
     }
+
     public Tamagotchi() {
         this.nombre = "Ramiro";
         this.hambre = 0;
@@ -22,6 +23,4 @@ public class Tamagotchi {
         this.felicidad = 100;
         this.energia = 100;
     }
-    }
-
 }

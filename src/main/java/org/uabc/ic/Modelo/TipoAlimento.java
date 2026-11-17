@@ -6,9 +6,11 @@ public enum TipoAlimento {
     PREMIO("Dulce");
 
     private final String nombreVisible;
+
     TipoAlimento(String nombreVisible) {
         this.nombreVisible = nombreVisible;
     }
+
     public String getNombreVisible() {
         return nombreVisible;
     }

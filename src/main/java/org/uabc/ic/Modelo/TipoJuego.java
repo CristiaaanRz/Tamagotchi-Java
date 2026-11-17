@@ -7,9 +7,11 @@ public enum TipoJuego {
     SALTOS("Practicar saltos");
 
     private final String nombreVisible;
+
     TipoJuego(String nombreVisible) {
         this.nombreVisible = nombreVisible;
     }
+
     public String getNombreVisible() {
         return nombreVisible;
     }

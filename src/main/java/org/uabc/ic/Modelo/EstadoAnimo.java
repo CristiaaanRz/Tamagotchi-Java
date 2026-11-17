@@ -6,9 +6,11 @@ public enum EstadoAnimo {
     MAL("!Se siente mal! Necesita cuidados especiales urgentemente.");
 
     private final String mensaje;
+
     EstadoAnimo(String mensaje) {
         this.mensaje = mensaje;
     }
+
     public String getMensaje() {
         return mensaje;
     }
