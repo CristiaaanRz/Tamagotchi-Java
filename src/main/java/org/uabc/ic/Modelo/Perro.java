@@ -1,44 +1,65 @@
 package org.uabc.ic.Modelo;
 
-public class Perro extends Tamagotchi implements TamagotchiActions {
+public class Perro extends Tamagotchi {
+    private int nivelLadridos;
 
-    private int nivelAgresividad;
-    private int nivelImperactividad;
-
-    public Perro(String nombre, int hambre, int salud, int felicidad, int energia) {
-        super(nombre, hambre, salud, felicidad, energia);
-        nivelAgresividad = 10;
-        nivelImperactividad = 10;
+    public Perro(String nombre){
+        super(nombre);
+        this.nivelLadridos = 0;
     }
 
-    public Perro() {
-        super("Ramiro", 0, 10, 5, 5);
+    public void ladrar(){
+        nivelLadridos++;
+        System.out.println(getNombre() + " esta ladrando.");
     }
 
-    @Override
-    public void comer(int alimento) {
-        System.out.println("Comiendo" + alimento);
-        hambre--;
-        energia++;
+    // Persigue su cola aumentando su felicidad y disminuye su energia
+    public void perseguirCola(){
+        System.out.println(getNombre() + " esta persiguiendo su cola.");
     }
 
-    @Override
-    public int jugar(int juego) {
-        return 0;
+    public int getNivelLadridos(){
+        return nivelLadridos;
     }
 
     @Override
-    public int dormir(int horasSueno) {
-        return 0;
+    public void realizarComportamientoUnico(){
+        ladrar();
     }
 
     @Override
-    public boolean morir() {
-        return false;
+    protected void aplicarEfectoAlimento(TipoAlimento alimento) {
+        switch (alimento) {
+            case CROQUETAS:
+                System.out.println(getNombre() + " esta comiendo sus croquetas favoritas.");
+                break;
+            case FRUTA:
+                System.out.println(getNombre() + " esta comiendo frutita.");
+                break;
+            case PREMIO:
+                System.out.println(getNombre() + " esta disfrutando de un dulce");
+                break;
+        }
     }
 
     @Override
-    public int sanar() {
-        return 0;
+    protected void aplicarEfectoJuego(TipoJuego juego) {
+        switch (juego) {
+            case PELOTA:
+                System.out.println(getNombre() + " esta corriendo detrás de su pelota.");
+                break;
+            case PASEO:
+                System.out.println(getNombre() + " salio a dar un paseo al parque.");
+                break;
+            case ESCONDIDAS:
+                System.out.println(getNombre() + " esta en su escondite esperando ser encontrado.");
+                break;
+            case SALTOS:
+                System.out.println(getNombre() + " esta practicando saltos.");
+                break;
+        }
     }
+
+
+
 }

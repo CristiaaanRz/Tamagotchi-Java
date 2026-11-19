@@ -1,5 +1,9 @@
 package org.uabc.ic.Modelo;
 
+/**
+ * En esta clase se definen los estados de ánimo para cada tamagotchi disponible.
+ */
+
 public enum EstadoAnimo {
     BIEN("Se siente bien y contento."),
     NECESITA_ATENCION("Necesita atencion; empieza a sentir hambre, sueño o aburrimiento."),

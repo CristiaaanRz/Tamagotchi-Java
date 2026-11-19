@@ -1,5 +1,9 @@
 package org.uabc.ic.Modelo;
 
+/**
+ * En esta clase se definen todas las actividades recreativas para los Tamagotchis disponibles.
+ */
+
 public enum TipoJuego {
     PELOTA("Jugar a la pelota"),
     PASEO("Dar un paseo"),
