@@ -1,14 +1,18 @@
 package org.uabc.ic.Modelo;
 
+/**
+ * Define las acciones básicas que todos los Tamagotchis deben ofrecer.
+ */
+
 public interface TamagotchiActions {
 
-    public void comer(int alimento);
+    void alimentar(TipoAlimento alimento);
 
-    public int jugar(int juego);
+    void jugar(TipoJuego juego);
 
-    public int dormir(int horasSueno);
+    void dormir();
 
-    public boolean morir();
+    String mostrarEstado();
 
-    public int sanar();
+    EstadoAnimo obtenerEstadoAnimo();
 }
