@@ -94,8 +94,28 @@ public abstract class Tamagotchi
         aplicarEfectoJuego(juego);
     }
 
+    @Override
+    public void dormir() {
+        if (durmiendo) {
+            return;
+        }
+        durmiendo = true;
+        modificarEnergia(40);
+    }
 
+    public void despertar() {
+        durmiendo = false;
+    }
 
+    @Override
+    public String mostrarEstado() {
+        return "Nombre: " + nombre
+                + "\nHambre: " + hambre
+                + "\nEnergía: " + energia
+                + "\nFelicidad: " + felicidad
+                + "\nDurmiendo: " + (durmiendo ? "sí" : "no")
+                + "\nÁnimo: " + obtenerEstadoAnimo().getMensaje();
+    }
 
     // Herramientas auxiliares para modificar atributos
     protected void modificarHambre(int cantidad){

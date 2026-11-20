@@ -1,54 +1,90 @@
 package org.uabc.ic.Modelo;
 
-public class Muneca extends Tamagotchi implements TamagotchiActions {
+public class Muneca extends Tamagotchi {
     private boolean llorando;
 
-    public Muneca(String nombre, int hambre, int salud, int felicidad, int energia, boolean llorando) {
-        super(nombre, hambre, salud, felicidad, energia);
-        this.llorando = llorando;
-    }
-
-    public Muneca() {
-        super("Si", 0, 10, 5, 5);
-
+    public Muneca(String nombre) {
+        super(nombre);
     }
 
     public void expresarEmocion() {
-
+        if (isDurmiendo()) {
+            return;
+        }
+        if (getFelicidad() <= 60) {
+            System.out.println(getNombre() + " dice: «Estoy aburrida».");
+        } else {
+            System.out.println(getNombre() + " dice: «Estoy feliz».");
+        }
     }
 
     public void llorar() {
-        
+        if (isDurmiendo()) {
+            return;
+        }
+        llorando = true;
+        System.out.println(getNombre() + " está llorando.");
+    }
+
+    public boolean isLlorando() {
+        return llorando;
     }
 
     @Override
-    public void comer(int alimento) {
-        // TODO Auto-generated method stub
-
+    public void realizarComportamientoUnico() {
+        expresarEmocion();
+        if (getFelicidad() <= 60) {
+            llorar();
+        }
     }
 
     @Override
-    public int dormir(int horasSueno) {
-        // TODO Auto-generated method stub
-        return 0;
+    public void dormir() {
+        super.dormir();
+        llorando = false;
     }
 
     @Override
-    public int jugar(int juego) {
-        // TODO Auto-generated method stub
-        return 0;
+    public String mostrarEstado() {
+        return super.mostrarEstado() + "\nLlorando: " + (llorando ? "sí" : "no");
     }
 
     @Override
-    public boolean morir() {
-        // TODO Auto-generated method stub
-        return false;
+    protected void aplicarEfectoAlimento(TipoAlimento alimento) {
+        int energiaRecuperada = switch (alimento) {
+            case CROQUETAS -> 3;
+            case FRUTA -> 8;
+            case PREMIO -> 10;
+        };
+        modificarEnergia(energiaRecuperada);
+        llorando = false;
+        System.out.println(getNombre() + " prueba " + alimento.getNombreVisible() + ".");
     }
 
     @Override
-    public int sanar() {
-        // TODO Auto-generated method stub
-        return 0;
+    protected void aplicarEfectoJuego(TipoJuego juego) {
+        switch (juego) {
+            case PELOTA -> {
+                modificarFelicidad(12);
+                modificarEnergia(-7);
+                System.out.println(getNombre() + " rueda la pelota con las manos.");
+            }
+            case PASEO -> {
+                modificarFelicidad(20);
+                modificarEnergia(-11);
+                System.out.println(getNombre() + " pasea en su cochecito.");
+            }
+            case ESCONDIDAS -> {
+                modificarFelicidad(23);
+                modificarEnergia(-15);
+                System.out.println(getNombre() + " se esconde detrás de la cortina.");
+            }
+            case SALTOS -> {
+                modificarFelicidad(16);
+                modificarEnergia(-10);
+                System.out.println(getNombre() + " salta a la cuerda.");
+            }
+        }
+        llorando = false;
     }
-
 }
