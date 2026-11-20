@@ -68,6 +68,15 @@ public abstract class Tamagotchi
     }
 
 
+    public void pasarTiempo() {
+        if (durmiendo) {
+            return;
+        }
+
+        modificarHambre(10);
+        modificarEnergia(-5);
+        modificarFelicidad(-5);
+    }
 
 
     @Override
@@ -77,7 +86,7 @@ public abstract class Tamagotchi
             return;
         }
         hambre =  limitar(hambre - 20, 0, 100);
-        felicidad =  limitar(felicidad + 15, 0, 100);
+        felicidad =  limitar(felicidad + 5, 0, 100);
         aplicarEfectoAlimento(alimento);
     }
 
@@ -97,25 +106,35 @@ public abstract class Tamagotchi
     @Override
     public void dormir() {
         if (durmiendo) {
+            System.out.println(nombre + " ya esta durmiendo.");
             return;
         }
+
         durmiendo = true;
         modificarEnergia(40);
+        System.out.println(nombre + " se ha quedado dormido.");
+    }
+    public void despertar() {
+        if (!durmiendo) {
+            System.out.println(nombre + " ya esta despierto.");
+            return;
+        }
+
+        durmiendo = false;
+        System.out.println(nombre + " ha despertado.");
     }
 
-    public void despertar() {
-        durmiendo = false;
-    }
 
     @Override
-    public String mostrarEstado() {
-        return "Nombre: " + nombre
-                + "\nHambre: " + hambre
-                + "\nEnergía: " + energia
-                + "\nFelicidad: " + felicidad
-                + "\nDurmiendo: " + (durmiendo ? "sí" : "no")
-                + "\nÁnimo: " + obtenerEstadoAnimo().getMensaje();
+    public String mostrarEstado(){
+        return "=== ESTADO DE " + nombre + " ===\n"
+                + "Hambre: " + hambre + "/100\n"
+                + "Energia: " + energia + "/100\n"
+                + "Felicidad: " + felicidad + "/100\n"
+                + "Durmiendo: " + (durmiendo ? "Si" : "No") + "\n"
+                + "Estado de animo: " + obtenerEstadoAnimo().getMensaje();
     }
+
 
     // Herramientas auxiliares para modificar atributos
     protected void modificarHambre(int cantidad){

@@ -36,13 +36,16 @@ public class Gato extends Tamagotchi {
     @Override
     public void dormir() {
         if (isDurmiendo()) {
+            System.out.println(getNombre() + " ya está durmiendo.");
             return;
         }
-        super.dormir();
-        ronroneando = false;
-        modificarEnergia(10);
+
         System.out.println(getNombre() + " se hace bolita para dormir.");
+        ronroneando = false;
+        super.dormir();
+        modificarEnergia(10);
     }
+
 
     @Override
     public String mostrarEstado() {

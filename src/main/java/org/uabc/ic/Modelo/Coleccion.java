@@ -3,25 +3,21 @@ package org.uabc.ic.Modelo;
 import java.util.ArrayList;
 
 public class Coleccion {
-    private ArrayList<Tamagotchi> misJuguetes;
+    private ArrayList<Tamagotchi> mascotas;
 
-    public Coleccion() {
-        misJuguetes = new ArrayList<>();
+    public Coleccion(){
+        mascotas = new ArrayList<>();
     }
 
-    public void agregar(Tamagotchi t) {
-        misJuguetes.add(t);
+    public void agregar(Tamagotchi mascota){
+        mascotas.add(mascota);
     }
 
-    public void agregarPerro(String nombre, int hambre, int energia,
-                             int felicidad, int salud, int agresivo, int hiper) {
-        agregar(new Perro(nombre, hambre, energia, felicidad, salud, agresivo, hiper));
+    public int cantidad(){
+        return mascotas.size();
     }
 
-    public String listaJuguetes() {
-        StringBuffer cadena = new StringBuffer();
-        for (Tamagotchi t : misJuguetes) {
-            cadena.append(t);
-        }
+    public Tamagotchi obtener(int indice){
+        return mascotas.get(indice);
     }
 }
