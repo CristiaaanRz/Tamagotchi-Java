@@ -18,6 +18,13 @@ public class Coleccion {
     }
 
     public Tamagotchi obtener(int indice){
+        if (indice < 0 || indice >= mascotas.size()){
+            return null;
+        }
         return mascotas.get(indice);
+    }
+
+    public ArrayList<Tamagotchi> obtenerMascotas(){
+        return new ArrayList<>(mascotas);   // Se copia la lista, mas no los objetos Tamagotchi.
     }
 }
