@@ -6,8 +6,9 @@ package org.uabc.ic.Modelo;
 
 public enum EstadoAnimo {
     BIEN("Se siente bien y contento."),
-    NECESITA_ATENCION("Necesita atencion; empieza a sentir hambre, sueño o aburrimiento."),
-    MAL("!Se siente mal! Necesita cuidados especiales urgentemente.");
+    NECESITA_ATENCION("Necesita atención."),
+    MAL("Está en estado crítico (enfermedad por falta de cuidados)."),
+    MUERTO("Ha muerto.");
 
     private final String mensaje;
 

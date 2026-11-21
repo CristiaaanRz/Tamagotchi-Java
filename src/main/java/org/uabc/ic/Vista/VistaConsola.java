@@ -1,112 +1,153 @@
 package org.uabc.ic.Vista;
 
-import java.util.Scanner;
 import java.util.List;
+import java.util.Scanner;
+import java.util.function.Function;
 
-import org.uabc.ic.Modelo.Tamagotchi;
 import org.uabc.ic.Controlador.ControladorTamagotchi;
+import org.uabc.ic.Modelo.Tamagotchi;
+import org.uabc.ic.Modelo.TipoAlimento;
+import org.uabc.ic.Modelo.TipoJuego;
 
 public class VistaConsola {
-    private Scanner scanner;
-    private ControladorTamagotchi controlador;
+    private final Scanner scanner = new Scanner(System.in);
+    private final ControladorTamagotchi controlador;
 
     public VistaConsola(ControladorTamagotchi controlador) {
-        this.scanner = new Scanner(System.in);
         this.controlador = controlador;
     }
 
-
     public void mostrarMenuPrincipal() {
-        System.out.println("\n=== SIMULADOR TAMAGOTCHI ===");
-        System.out.println("1. Crear mascota");
-        System.out.println("2. Ver mascotas");
-        System.out.println("3. Interactuar con mascota");
-        System.out.println("4. Salir");
+        System.out.println("""
+
+                === SIMULADOR TAMAGOTCHI ===
+                1. Crear mascota
+                2. Ver mascotas
+                3. Interactuar con mascota
+                4. Salir""");
     }
 
-
-    public int leerOpcion() {
-        System.out.println("Seleccione una opción: ");
-        int opcion = scanner.nextInt();
-        scanner.nextLine();
-        return opcion;
+    private int leerOpcion(int minimo, int maximo) {
+        while (true) {
+            String entrada = leerTexto("Selecciona una opción:");
+            if (entrada == null) {
+                return -1;
+            }
+            try {
+                int opcion = Integer.parseInt(entrada.strip());
+                if (opcion >= minimo && opcion <= maximo) {
+                    return opcion;
+                }
+            } catch (NumberFormatException excepcion) {
+                // Se solicita de nuevo la opción cuando la entrada no es numérica.
+            }
+            System.out.printf("Ingresa un número entre %d y %d.%n", minimo, maximo);
+        }
     }
-
 
     public String leerTexto(String mensaje) {
         System.out.println(mensaje);
-        return scanner.nextLine();
+        return scanner.hasNextLine() ? scanner.nextLine() : null;
     }
-
-
-    public void mostrarMensaje(String mensaje) {
-        System.out.println(mensaje);
-    }
-
 
     public void mostrarMascotas(List<Tamagotchi> mascotas) {
         if (mascotas.isEmpty()) {
-            mostrarMensaje("No tiene mascotas registradas.");
+            System.out.println("No hay mascotas registradas.");
             return;
         }
 
-        System.out.println("\n---Mis Mascotas---");
+        System.out.println("\n--- MIS MASCOTAS ---");
         for (int i = 0; i < mascotas.size(); i++) {
             Tamagotchi mascota = mascotas.get(i);
-
-            System.out.println((i + 1) + ". " + mascota.getNombre() +
-                    " - " + mascota.getClass().getSimpleName());
+            System.out.printf("%d. %s (%s, %d %s). %s%n", i + 1, mascota.getNombre(),
+                    mascota.getTipoVisible(), mascota.getEdad(), mascota.getEdad() == 1 ? "día" : "días",
+                    mascota.obtenerEstadoAnimo().getMensaje());
         }
     }
-
 
     private void crearMascota() {
-
-        mostrarMensaje("\n--- CREAR MASCOTA ---");
-        mostrarMensaje("Tipos disponibles: \nPerro, \nGato, \nMuñeca, \nCuyo\n");
-
-        String tipo = leerTexto("Tipo: ");
-        String nombre = leerTexto("Nombre: ");
-
-        boolean creada = controlador.crearMascota(tipo, nombre);
-
-        if (creada) {
-            mostrarMensaje("Mascota creada correctamente.");
-        } else {
-            mostrarMensaje("No se pudo crear la mascota.");
+        System.out.println("\n--- CREAR MASCOTA ---");
+        String tipo = leerTexto("Tipo (Perro, Gato, Muñeca o Cuyo):");
+        if (tipo == null) {
+            return;
+        }
+        String nombre = leerTexto("Nombre:");
+        if (nombre != null) {
+            controlador.crearMascota(tipo, nombre);
         }
     }
 
+    private void interactuarConMascota() {
+        List<Tamagotchi> mascotas = controlador.obtenerMascotas();
+        mostrarMascotas(mascotas);
+        if (mascotas.isEmpty()) {
+            return;
+        }
 
-
-
-
-
-
-    public void iniciar() {
-        int opcion;
-
-        do {
-            mostrarMenuPrincipal();
-            opcion = leerOpcion();
-
-            switch (opcion) {
-                case 1:
-                    crearMascota();
-                    break;
-                case 2:
-                    mostrarMascotas(controlador.obtenerMascotas());
-                    break;
-                case 3:
-                    mostrarMensaje("en proceso brou, aqui va eso de alimentar, jugar, dormir y despertar...");
-                    break;
-                case 4:
-                    mostrarMensaje("Saliendo del programa...");
-                    break;
-                default:
-                    mostrarMensaje("Opcion no valida.");
+        System.out.println("0. Volver");
+        int seleccion = leerOpcion(0, mascotas.size());
+        if (seleccion <= 0) {
+            return;
+        }
+        int indice = seleccion - 1;
+        Tamagotchi mascota = controlador.obtenerMascota(indice);
+        while (true) {
+            System.out.println("\n" + mascota.mostrarEstado());
+            if (!mascota.estaVivo()) {
+                return;
             }
-        } while (opcion != 4);
+            System.out.println("""
+
+                    1. Alimentar
+                    2. Jugar
+                    3. Dormir y comenzar el día siguiente
+                    4. Despertar
+                    5. Comportamiento especial
+                    0. Volver""");
+            switch (leerOpcion(0, 5)) {
+                case 1 -> {
+                    TipoAlimento alimento = elegir(mascota.obtenerAlimentos(), TipoAlimento::getNombreVisible);
+                    if (alimento != null) {
+                        controlador.alimentarMascota(indice, alimento);
+                    }
+                }
+                case 2 -> {
+                    TipoJuego juego = elegir(mascota.obtenerJuegos(), TipoJuego::getNombreVisible);
+                    if (juego != null) {
+                        controlador.jugarConMascota(indice, juego);
+                    }
+                }
+                case 3 -> controlador.dormirMascota(indice);
+                case 4 -> controlador.despertarMascota(indice);
+                case 5 -> controlador.realizarComportamientoEspecial(indice);
+                default -> {
+                    return;
+                }
+            }
+        }
     }
 
+    private <T> T elegir(List<T> opciones, Function<T, String> nombreVisible) {
+        for (int i = 0; i < opciones.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, nombreVisible.apply(opciones.get(i)));
+        }
+        System.out.println("0. Cancelar");
+        int opcion = leerOpcion(0, opciones.size());
+        return opcion <= 0 ? null : opciones.get(opcion - 1);
+    }
+
+    public void iniciar() {
+        while (true) {
+            mostrarMenuPrincipal();
+            switch (leerOpcion(1, 4)) {
+                case 1 -> crearMascota();
+                case 2 -> mostrarMascotas(controlador.obtenerMascotas());
+                case 3 -> interactuarConMascota();
+                default -> {
+                    System.out.println("Saliendo del programa...");
+                    return;
+                }
+            }
+        }
+    }
 }

@@ -8,23 +8,23 @@ public class Gato extends Tamagotchi {
     }
 
     public void maullar() {
-        if (isDurmiendo()) {
+        if (!estaVivo() || isDurmiendo()) {
             return;
         }
-        System.out.println(getNombre() + " dice: ¡miau!");
+        emitirMensaje(getNombre() + " dice: ¡miau!");
     }
 
     public void ronronear() {
-        if (isDurmiendo()) {
+        if (!estaVivo() || isDurmiendo()) {
             return;
         }
         ronroneando = true;
         modificarFelicidad(8);
-        System.out.println(getNombre() + " está ronroneando.");
+        emitirMensaje(getNombre() + " está ronroneando.");
     }
 
     public boolean isRonroneando() {
-        return ronroneando;
+        return estaVivo() && ronroneando;
     }
 
     @Override
@@ -35,58 +35,28 @@ public class Gato extends Tamagotchi {
 
     @Override
     public void dormir() {
-        if (isDurmiendo()) {
-            System.out.println(getNombre() + " ya está durmiendo.");
+        if (!estaVivo() || isDurmiendo()) {
             return;
         }
 
-        System.out.println(getNombre() + " se hace bolita para dormir.");
+        emitirMensaje(getNombre() + " se hace bolita para dormir.");
         ronroneando = false;
         super.dormir();
-        modificarEnergia(10);
     }
 
+    @Override
+    protected int energiaRecuperadaAlDormir() {
+        return 50;
+    }
 
     @Override
     public String mostrarEstado() {
-        return super.mostrarEstado() + "\nRonroneando: " + (ronroneando ? "sí" : "no");
-    }
-
-    @Override
-    protected void aplicarEfectoAlimento(TipoAlimento alimento) {
-        int energiaRecuperada = switch (alimento) {
-            case CROQUETAS -> 10;
-            case FRUTA -> 5;
-            case PREMIO -> 8;
-        };
-        modificarEnergia(energiaRecuperada);
-        System.out.println(getNombre() + " come " + alimento.getNombreVisible() + ".");
+        return super.mostrarEstado() + "\nRonroneando: " + (isRonroneando() ? "sí" : "no");
     }
 
     @Override
     protected void aplicarEfectoJuego(TipoJuego juego) {
         ronroneando = false;
-        switch (juego) {
-            case PELOTA -> {
-                modificarFelicidad(20);
-                modificarEnergia(-15);
-                System.out.println(getNombre() + " hace rodar la pelota con la pata.");
-            }
-            case PASEO -> {
-                modificarFelicidad(9);
-                modificarEnergia(-6);
-                System.out.println(getNombre() + " pasea por el jardín.");
-            }
-            case ESCONDIDAS -> {
-                modificarFelicidad(17);
-                modificarEnergia(-11);
-                System.out.println(getNombre() + " se esconde dentro de una caja.");
-            }
-            case SALTOS -> {
-                modificarFelicidad(22);
-                modificarEnergia(-19);
-                System.out.println(getNombre() + " salta para atrapar una pluma.");
-            }
-        }
+        super.aplicarEfectoJuego(juego);
     }
 }

@@ -1,22 +1,34 @@
 package org.uabc.ic.Controlador;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.uabc.ic.Modelo.Coleccion;
-import org.uabc.ic.Modelo.Tamagotchi;
-import org.uabc.ic.Modelo.Perro;
+import org.uabc.ic.Modelo.Cuyo;
+import org.uabc.ic.Modelo.EstadoAnimo;
 import org.uabc.ic.Modelo.Gato;
 import org.uabc.ic.Modelo.Muneca;
-import org.uabc.ic.Modelo.Cuyo;
+import org.uabc.ic.Modelo.Perro;
+import org.uabc.ic.Modelo.Tamagotchi;
 import org.uabc.ic.Modelo.TipoAlimento;
 import org.uabc.ic.Modelo.TipoJuego;
 
-import java.util.List;
-
 public class ControladorTamagotchi {
+    private enum Interaccion {
+        ALIMENTAR, JUGAR, DORMIR, DESPERTAR, COMPORTAMIENTO_ESPECIAL
+    }
 
-    private Coleccion coleccion;
+    private final Coleccion coleccion = new Coleccion();
+    private final Consumer<String> receptorMensajes;
 
     public ControladorTamagotchi() {
-        this.coleccion = new Coleccion();
+        this(System.out::println);
+    }
+
+    public ControladorTamagotchi(Consumer<String> receptorMensajes) {
+        this.receptorMensajes = Objects.requireNonNull(receptorMensajes);
     }
 
     public Tamagotchi obtenerMascota(int indice) {
@@ -27,84 +39,118 @@ public class ControladorTamagotchi {
         return coleccion.cantidad();
     }
 
-
-
-
-    public boolean crearMascota(String tipo, String nombre) {
-
-        if (nombre == null || nombre.trim().isEmpty()) {
-            return false;
-        }
-
-        Tamagotchi mascota;
-
-        switch (tipo.toLowerCase()) {
-            case "perro":
-                mascota = new Perro(nombre);
-                break;
-            case "gato":
-                mascota = new Gato(nombre);
-                break;
-            case "muneca":
-                mascota = new Muneca(nombre);
-                break;
-            case "cuyo":
-                mascota = new Cuyo(nombre);
-                break;
-            default:
-                return false;
-        }
-        coleccion.agregar(mascota);
-        return true;
-    }
-
-
-
-    public boolean alimentarMascota(int indice, TipoAlimento alimento) {
-        Tamagotchi mascota = coleccion.obtener(indice);
-
-        if (mascota == null || alimento == null || mascota.isDurmiendo()){
-            return false;
-        }
-        mascota.alimentar(alimento);
-        return true;
-    }
-
-    public boolean jugarConMascota(int indice, TipoJuego juego) {
-        Tamagotchi mascota = coleccion.obtener(indice);
-
-        if (mascota == null || juego == null || mascota.isDurmiendo() || mascota.getEnergia() <= 20){
-            return false;
-        }
-        mascota.jugar(juego);
-        return true;
-    }
-
-    public boolean dormirMascota(int indice){
-        Tamagotchi mascota = coleccion.obtener(indice);
-
-        if (mascota == null || mascota.isDurmiendo()){
-            return false;
-        }
-        mascota.dormir();
-        return true;
-    }
-
-    public boolean despertarMascota(int indice){
-        Tamagotchi mascota = coleccion.obtener(indice);
-
-        if (mascota == null || !mascota.isDurmiendo()){
-            return false;
-        }
-        mascota.despertar();
-        return true;
-    }
-
-
-
-
-    public List<Tamagotchi> obtenerMascotas(){
+    public List<Tamagotchi> obtenerMascotas() {
         return coleccion.obtenerMascotas();
     }
 
+    public boolean crearMascota(String tipo, String nombre) {
+        if (nombre == null || nombre.isBlank()) {
+            return informarError("Escribe un nombre para la mascota.");
+        }
+
+        String tipoNormalizado = tipo == null ? "" : tipo.strip().toLowerCase(Locale.ROOT);
+        Tamagotchi mascota = switch (tipoNormalizado) {
+            case "perro" -> new Perro(nombre);
+            case "gato" -> new Gato(nombre);
+            case "muneca", "muñeca" -> new Muneca(nombre);
+            case "cuyo" -> new Cuyo(nombre);
+            default -> null;
+        };
+        if (mascota == null) {
+            return informarError("Elige un tipo de mascota válido.");
+        }
+
+        mascota.setReceptorMensajes(receptorMensajes);
+        coleccion.agregar(mascota);
+        receptorMensajes.accept("Se creó la mascota " + mascota.getNombre() + ".");
+        return true;
+    }
+
+    public boolean alimentarMascota(int indice, TipoAlimento alimento) {
+        if (alimento == null) {
+            return informarError("Selecciona un alimento.");
+        }
+        Tamagotchi mascota = obtenerMascota(indice);
+        if (mascota != null && !mascota.obtenerAlimentos().contains(alimento)) {
+            return informarError("Ese alimento no corresponde a " + mascota.getNombre() + ".");
+        }
+        return interactuar(mascota, Interaccion.ALIMENTAR, seleccionada -> seleccionada.alimentar(alimento));
+    }
+
+    public boolean jugarConMascota(int indice, TipoJuego juego) {
+        if (juego == null) {
+            return informarError("Selecciona un juego.");
+        }
+        Tamagotchi mascota = obtenerMascota(indice);
+        if (mascota != null && !mascota.obtenerJuegos().contains(juego)) {
+            return informarError("Ese juego no corresponde a " + mascota.getNombre() + ".");
+        }
+        return interactuar(mascota, Interaccion.JUGAR, seleccionada -> seleccionada.jugar(juego));
+    }
+
+    public boolean dormirMascota(int indice) {
+        return interactuar(obtenerMascota(indice), Interaccion.DORMIR, Tamagotchi::dormir);
+    }
+
+    public boolean despertarMascota(int indice) {
+        return interactuar(obtenerMascota(indice), Interaccion.DESPERTAR, Tamagotchi::despertar);
+    }
+
+    public boolean realizarComportamientoEspecial(int indice) {
+        return interactuar(obtenerMascota(indice), Interaccion.COMPORTAMIENTO_ESPECIAL, Tamagotchi::realizarComportamientoUnico);
+    }
+
+    private boolean interactuar(Tamagotchi mascota, Interaccion interaccion, Consumer<Tamagotchi> accion) {
+        if (mascota == null) {
+            return informarError("Selecciona una mascota válida.");
+        }
+        if (!mascota.estaVivo()) {
+            return informarError(mascota.getNombre() + " ha muerto. Causa: "
+                    + mascota.getDescripcionMuerte() + ".");
+        }
+        boolean vaADespertar = interaccion == Interaccion.DESPERTAR;
+        if (mascota.isDurmiendo() != vaADespertar) {
+            return informarError(mascota.getNombre()
+                    + (vaADespertar ? " ya está despierta." : " está durmiendo."));
+        }
+        if (interaccion == Interaccion.JUGAR && !mascota.puedeJugar()) {
+            return informarError(mascota.getNombre() + " necesita descansar antes de jugar.");
+        }
+        EstadoAnimo estadoAnterior = mascota.obtenerEstadoAnimo();
+        accion.accept(mascota);
+        if (interaccion == Interaccion.DORMIR) {
+            avanzarDia(mascota, estadoAnterior);
+        } else {
+            informarCambioEstado(mascota, estadoAnterior);
+        }
+        return true;
+    }
+
+    private void avanzarDia(Tamagotchi mascotaDormida, EstadoAnimo estadoAntesDeDormir) {
+        receptorMensajes.accept("Comenzó un nuevo día.");
+        for (Tamagotchi mascota : obtenerMascotas()) {
+            if (!mascota.estaVivo()) {
+                continue;
+            }
+            EstadoAnimo estadoAnterior = mascota == mascotaDormida
+                    ? estadoAntesDeDormir : mascota.obtenerEstadoAnimo();
+            mascota.avanzarDia();
+            informarCambioEstado(mascota, estadoAnterior);
+        }
+    }
+
+    private void informarCambioEstado(Tamagotchi mascota, EstadoAnimo estadoAnterior) {
+        EstadoAnimo estado = mascota.obtenerEstadoAnimo();
+        if (estado == EstadoAnimo.MUERTO) {
+            receptorMensajes.accept(mascota.getNombre() + " ha muerto. Causa: "
+                    + mascota.getDescripcionMuerte() + ".");
+        } else if (estado != estadoAnterior && estado != EstadoAnimo.BIEN) {
+            receptorMensajes.accept(mascota.getNombre() + ": " + estado.getMensaje());
+        }
+    }
+
+    private boolean informarError(String mensaje) {
+        receptorMensajes.accept(mensaje);
+        return false;
+    }
 }

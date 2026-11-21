@@ -1,0 +1,256 @@
+.root {
+    -fx-padding: 18 24 20 24;
+    -fx-background-color: #f8eee0;
+    -fx-font-family: "Arial";
+    -fx-font-size: 13px;
+    -fx-focus-color: #9e4938;
+    -fx-faint-focus-color: #f1c5b9;
+}
+
+.label {
+    -fx-text-fill: #422b27;
+}
+
+.encabezado {
+    -fx-padding: 0 0 12 0;
+}
+
+.titulo, .nombre-mascota, .subtitulo {
+    -fx-font-family: "Georgia";
+    -fx-font-weight: bold;
+}
+
+.titulo {
+    -fx-font-size: 31px;
+    -fx-text-fill: #6b3b32;
+}
+
+.nombre-mascota {
+    -fx-font-size: 37px;
+    -fx-text-fill: #432923;
+}
+
+.subtitulo {
+    -fx-font-size: 17px;
+}
+
+.resumen, .detalle, .especie-lista {
+    -fx-text-fill: #71584e;
+}
+
+.especie-lista {
+    -fx-font-size: 12px;
+}
+
+.nombre-lista, .nombre-medidor, .valor {
+    -fx-font-weight: bold;
+}
+
+.limite-medidor {
+    -fx-font-size: 11px;
+    -fx-text-fill: #754e42;
+}
+
+.ficha, .barra-lateral, .panel, .medidor {
+    -fx-background-radius: 19px;
+    -fx-border-radius: 19px;
+    -fx-border-width: 1px;
+}
+
+.ficha {
+    -fx-background-color: #fce2cf;
+    -fx-border-color: #eec7ad;
+    -fx-padding: 15px;
+}
+
+.barra-lateral, .panel {
+    -fx-background-color: #fff9ef;
+    -fx-border-color: #ead7c3;
+}
+
+.barra-lateral {
+    -fx-padding: 14px;
+}
+
+.panel {
+    -fx-padding: 10 13 11 13;
+}
+
+.estado {
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 20px;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-color: #eed6db;
+    -fx-text-fill: #703c4c;
+}
+
+.estado.bien {
+    -fx-background-color: #f1f0d4;
+    -fx-text-fill: #485636;
+}
+
+.estado.necesita_atencion {
+    -fx-background-color: #ffeeb8;
+    -fx-text-fill: #765225;
+}
+
+.estado.mal {
+    -fx-background-color: #ffcab9;
+    -fx-text-fill: #833c38;
+}
+
+.aviso {
+    -fx-font-weight: bold;
+    -fx-text-fill: #853d31;
+}
+
+.medidor {
+    -fx-padding: 10 12 9 12;
+}
+
+.medidor.hambre {
+    -fx-background-color: #fce6d9;
+    -fx-border-color: #eac7b3;
+    -fx-accent: #b85d44;
+}
+
+.medidor.energia {
+    -fx-background-color: #ebe2ef;
+    -fx-border-color: #d9c9e1;
+    -fx-accent: #805691;
+}
+
+.medidor.felicidad {
+    -fx-background-color: #e9eedc;
+    -fx-border-color: #d8dfc4;
+    -fx-accent: #66814b;
+}
+
+.progress-bar {
+    -fx-pref-height: 8px;
+    -fx-max-height: 8px;
+}
+
+.progress-bar > .track {
+    -fx-background-color: #593e3724;
+    -fx-background-insets: 0;
+    -fx-background-radius: 7px;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -fx-accent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 7px;
+    -fx-padding: 4px;
+}
+
+.formulario {
+    -fx-padding: 12 0 0 0;
+    -fx-border-color: #ecdac7 transparent transparent transparent;
+}
+
+.button, .combo-box, .text-field {
+    -fx-min-height: 33px;
+    -fx-background-insets: 0;
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
+    -fx-border-width: 1px;
+}
+
+.button {
+    -fx-border-color: transparent;
+    -fx-padding: 5 12 5 12;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button.terracota {
+    -fx-background-color: #9f4737;
+    -fx-text-fill: #fff8ee;
+}
+
+.button.coral {
+    -fx-background-color: #f3d1bc;
+    -fx-text-fill: #78382d;
+}
+
+.button.verde {
+    -fx-background-color: #d9e4c6;
+    -fx-text-fill: #3d5230;
+}
+
+.button.morado {
+    -fx-background-color: #dfcfe7;
+    -fx-text-fill: #594066;
+}
+
+.button.secundario, .combo-box, .text-field {
+    -fx-background-color: #fffaf3;
+    -fx-border-color: #e3cbb4;
+    -fx-text-fill: #553b32;
+}
+
+.button:hover {
+    -fx-effect: dropshadow(gaussian, #754b3650, 5, 0, 0, 1);
+}
+
+.button:focused, .text-field:focused, .combo-box:focused, .list-view:focused {
+    -fx-border-color: #ba7660;
+}
+
+.button:disabled, .combo-box:disabled {
+    -fx-opacity: 0.54;
+}
+
+.combo-box > .list-cell {
+    -fx-text-fill: #553b32;
+    -fx-padding: 2 7 2 8;
+}
+
+.text-field {
+    -fx-prompt-text-fill: #80675c;
+}
+
+.list-view {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+    -fx-border-radius: 9px;
+    -fx-padding: 1px;
+}
+
+.list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5 6 5 6;
+    -fx-background-radius: 10px;
+    -fx-text-fill: #553b32;
+}
+
+.list-view .list-cell:filled:hover {
+    -fx-background-color: #f9ebdc;
+}
+
+.list-view .list-cell:filled:selected {
+    -fx-background-color: #f4dbc9;
+    -fx-text-fill: #553b32;
+}
+
+.combo-box-popup > .list-view {
+    -fx-background-color: #fffaf3;
+    -fx-background-radius: 9px;
+    -fx-border-color: #e3cbb4;
+}
+
+.actividad .list-cell {
+    -fx-padding: 3 6 3 6;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #d6bba7;
+    -fx-background-radius: 8px;
+}
