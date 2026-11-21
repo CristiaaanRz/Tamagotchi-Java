@@ -92,7 +92,7 @@ public class VistaConsola {
         int indice = seleccion - 1;
         Tamagotchi mascota = controlador.obtenerMascota(indice);
         while (true) {
-            System.out.println("\n" + mascota.mostrarEstado());
+            System.out.println("\n" + mascota);
             if (!mascota.estaVivo()) {
                 return;
             }

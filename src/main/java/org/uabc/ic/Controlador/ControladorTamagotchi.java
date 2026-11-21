@@ -119,24 +119,11 @@ public class ControladorTamagotchi {
         EstadoAnimo estadoAnterior = mascota.obtenerEstadoAnimo();
         accion.accept(mascota);
         if (interaccion == Interaccion.DORMIR) {
-            avanzarDia(mascota, estadoAnterior);
-        } else {
-            informarCambioEstado(mascota, estadoAnterior);
-        }
-        return true;
-    }
-
-    private void avanzarDia(Tamagotchi mascotaDormida, EstadoAnimo estadoAntesDeDormir) {
-        receptorMensajes.accept("Comenzó un nuevo día.");
-        for (Tamagotchi mascota : obtenerMascotas()) {
-            if (!mascota.estaVivo()) {
-                continue;
-            }
-            EstadoAnimo estadoAnterior = mascota == mascotaDormida
-                    ? estadoAntesDeDormir : mascota.obtenerEstadoAnimo();
             mascota.avanzarDia();
-            informarCambioEstado(mascota, estadoAnterior);
+            receptorMensajes.accept(mascota.getNombre() + " comienza un nuevo día.");
         }
+        informarCambioEstado(mascota, estadoAnterior);
+        return true;
     }
 
     private void informarCambioEstado(Tamagotchi mascota, EstadoAnimo estadoAnterior) {

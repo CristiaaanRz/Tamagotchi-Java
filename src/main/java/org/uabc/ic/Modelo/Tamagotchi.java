@@ -240,8 +240,14 @@ public abstract class Tamagotchi implements TamagotchiActions {
     }
 
     @Override
+    public String toString() {
+        return mostrarEstado();
+    }
+
+    @Override
     public String mostrarEstado() {
         String estado = "=== ESTADO DE " + nombre + " ===\n"
+                + "Tipo: " + getTipoVisible() + "\n"
                 + "Edad: " + edad + (edad == 1 ? " día\n" : " días\n")
                 + "Hambre: " + hambre + "/100\n"
                 + "Energía: " + energia + "/100\n"

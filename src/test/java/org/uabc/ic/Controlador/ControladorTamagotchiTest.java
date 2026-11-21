@@ -62,7 +62,7 @@ class ControladorTamagotchiTest {
             assertEquals(93, mascota.getEnergia(), caso);
             assertEquals(93, mascota.getFelicidad(), caso);
 
-            cerrarDiaConOtraMascota(controlador);
+            mascota.avanzarDia();
             assertEquals(2, mascota.getEdad(), caso);
             assertEquals(80, mascota.getEnergia(), caso);
             assertEquals(80, mascota.getFelicidad(), caso);
@@ -143,7 +143,7 @@ class ControladorTamagotchiTest {
     }
 
     @Test
-    void soloDormirAvanzaUnDiaParaTodasLasMascotas() {
+    void dormirAvanzaSoloElDiaDeLaMascotaSeleccionada() {
         ControladorTamagotchi controlador = crearControlador("Gato");
         assertTrue(controlador.crearMascota("Cuyo", "Pipo"));
         Tamagotchi gato = controlador.obtenerMascota(0);
@@ -156,9 +156,7 @@ class ControladorTamagotchiTest {
         assertTrue(controlador.realizarComportamientoEspecial(0));
         assertEquals(0, gato.getEdad());
         assertEquals(0, cuyo.getEdad());
-        assertEquals(0, cuyo.getHambre());
-        assertEquals(100, cuyo.getEnergia());
-        assertEquals(100, cuyo.getFelicidad());
+        String estadoInicialDelCuyo = cuyo.toString();
 
         assertTrue(controlador.dormirMascota(0));
         assertEquals(1, gato.getEdad());
@@ -168,24 +166,34 @@ class ControladorTamagotchiTest {
         assertEquals(0, gato.getDiasSinDormir());
         assertEquals(0, gato.getDiasSinJugar());
 
-        assertEquals(1, cuyo.getEdad());
-        assertEquals(10, cuyo.getHambre());
-        assertEquals(90, cuyo.getEnergia());
-        assertEquals(90, cuyo.getFelicidad());
-        assertEquals(1, cuyo.getDiasSinDormir());
-        assertEquals(1, cuyo.getDiasSinJugar());
+        assertEquals(estadoInicialDelCuyo, cuyo.toString());
 
         assertFalse(controlador.dormirMascota(0));
         assertEquals(1, gato.getEdad());
-        assertEquals(1, cuyo.getEdad());
+        assertEquals(0, cuyo.getEdad());
 
+        String estadoDelGatoDormido = gato.toString();
         assertTrue(controlador.dormirMascota(1));
-        assertEquals(2, gato.getEdad());
-        assertEquals(100, gato.getEnergia());
-        assertEquals(90, gato.getFelicidad());
+        assertEquals(estadoDelGatoDormido, gato.toString());
+        assertEquals(1, cuyo.getEdad());
+        assertEquals(10, cuyo.getHambre());
+        assertEquals(100, cuyo.getEnergia());
+        assertEquals(90, cuyo.getFelicidad());
         assertTrue(controlador.despertarMascota(0));
-        assertEquals(2, gato.getEdad());
-        assertEquals(2, cuyo.getEdad());
+        assertEquals(1, gato.getEdad());
+    }
+
+    @Test
+    void toStringMuestraLosAtributosYElEstadoDeLaEspecie() {
+        ControladorTamagotchi controlador = crearControlador("Gato");
+        Tamagotchi mascota = controlador.obtenerMascota(0);
+        assertTrue(controlador.realizarComportamientoEspecial(0));
+
+        String descripcion = mascota.toString();
+        for (String texto : List.of("Tama", "Tipo: Gato", "Edad: 0 días", "Hambre: 0/100",
+                "Energía: 100/100", "Felicidad: 100/100", "Durmiendo: No", "Estado:", "Ronroneando: sí")) {
+            assertTrue(descripcion.contains(texto), texto);
+        }
     }
 
     @Test
@@ -239,7 +247,7 @@ class ControladorTamagotchiTest {
     }
 
     @Test
-    void sigueRecuperandoEnergiaCuandoOtroAvanzaElDiaMientrasDuerme() {
+    void laRecuperacionDeEnergiaDependeDelDescansoPropio() {
         ControladorTamagotchi controlador = prepararConDiasSinCuidado("Gato", 7);
         Tamagotchi mascota = controlador.obtenerMascota(0);
         assertEquals(30, mascota.getEnergiaMaxima());
@@ -255,7 +263,14 @@ class ControladorTamagotchiTest {
         assertEquals(100, mascota.getEnergiaMaxima());
         assertEquals(74, mascota.getEnergia());
         assertEquals(8, mascota.getEdad());
-        cerrarDiaConOtraMascota(controlador);
+        assertTrue(controlador.crearMascota("Perro", "Toby"));
+        assertTrue(controlador.dormirMascota(1));
+        assertEquals(74, mascota.getEnergia());
+        assertEquals(8, mascota.getEdad());
+
+        assertTrue(controlador.despertarMascota(0));
+        assertTrue(controlador.alimentarMascota(0, TipoAlimento.ATUN));
+        assertTrue(controlador.dormirMascota(0));
         assertEquals(100, mascota.getEnergia());
         assertEquals(9, mascota.getEdad());
     }
@@ -263,7 +278,6 @@ class ControladorTamagotchiTest {
     @Test
     void elCansancioSoloMataAlLlegarACeroEnergia() {
         ControladorTamagotchi controlador = crearControlador("Gato");
-        assertTrue(controlador.crearMascota("Perro", "Toby"));
         Tamagotchi mascota = controlador.obtenerMascota(0);
 
         for (int dia = 1; dia <= 10; dia++) {
@@ -271,7 +285,7 @@ class ControladorTamagotchiTest {
             if (dia == 1 || dia == 4 || dia == 7) {
                 assertTrue(controlador.jugarConMascota(0, TipoJuego.OVILLO));
             }
-            cerrarDiaConOtraMascota(controlador);
+            mascota.avanzarDia();
             if (dia < 10) {
                 assertTrue(mascota.estaVivo(), "Día " + dia);
             }
@@ -313,19 +327,10 @@ class ControladorTamagotchiTest {
 
     private ControladorTamagotchi prepararConDiasSinCuidado(String tipo, int dias) {
         ControladorTamagotchi controlador = crearControlador(tipo);
-        assertTrue(controlador.crearMascota("Perro", "Toby"));
+        Tamagotchi mascota = controlador.obtenerMascota(0);
         for (int dia = 0; dia < dias; dia++) {
-            cerrarDiaConOtraMascota(controlador);
+            mascota.avanzarDia();
         }
         return controlador;
-    }
-
-    private void cerrarDiaConOtraMascota(ControladorTamagotchi controlador) {
-        if (controlador.obtenerMascota(1).isDurmiendo()) {
-            assertTrue(controlador.despertarMascota(1));
-        }
-        assertTrue(controlador.alimentarMascota(1, TipoAlimento.CROQUETAS));
-        assertTrue(controlador.jugarConMascota(1, TipoJuego.PASEO));
-        assertTrue(controlador.dormirMascota(1));
     }
 }
